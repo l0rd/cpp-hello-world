@@ -7,6 +7,13 @@ components:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
       memoryLimit: 1G
       mountSources: true
+      volumeMounts: 
+          - name: data
+            path: /tmp
+        mountSources: true
+    - name: data
+      volume:
+         size: 1G
 commands:
   - id: build
     exec:
