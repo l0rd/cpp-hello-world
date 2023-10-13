@@ -3,6 +3,8 @@ metadata:
   name: cpp
 components:
   - name: tools
+    attributes:
+    pod-overrides: {"metadata": {"label": {"key1:value1"}}}
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-latest
       memoryLimit: 1G
