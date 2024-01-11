@@ -2,16 +2,18 @@ version: 2.0.0
 editors:
   - schemaVersion: 2.1.0
     metadata:
-      name: che-incubator/che-code/latest
+      name: che-incubator/che-code/insiders
       displayName: VS Code - Open Source
-      description: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+      description: Microsoft Visual Studio Code - Open Source IDE for Eclipse Che
+        - Insiders build
       icon: https://raw.githubusercontent.com/che-incubator/che-code/main/code/resources/server/code-512.png?sanitize=true
       attributes:
         publisher: che-incubator
-        version: latest
-        title: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+        version: insiders
+        title: Microsoft Visual Studio Code - Open Source IDE for Eclipse Che - Insiders
+          build
         repository: https://github.com/che-incubator/che-code
-        firstPublicationDate: '2022-07-19'
+        firstPublicationDate: '2021-10-31'
         skipMetaYaml: true
     commands:
       - id: init-container-command
@@ -20,7 +22,8 @@ editors:
       - id: init-che-code-command
         exec:
           component: che-code-runtime-description
-          commandLine: 'nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt 2>&1 &'
+          commandLine: 'nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt
+            2>&1 &'
     events:
       preStart:
         - init-container-command
@@ -29,7 +32,7 @@ editors:
     components:
       - name: che-code-injector
         container:
-          image: 'registry.redhat.io/devspaces/code-rhel8:3.10'
+          image: 'quay.io/che-incubator/che-code:insiders'
           command: ["/entrypoint-init-container.sh"]
           volumeMounts:
             - name: checode
@@ -40,7 +43,7 @@ editors:
           cpuRequest: 30m
       - name: che-code-runtime-description
         container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
+          image: 'quay.io/devfile/universal-developer-image:latest'
           memoryLimit: 1024Mi
           memoryRequest: 256Mi
           cpuLimit: 500m
@@ -58,17 +61,18 @@ editors:
               targetPort: 3100
               exposure: public
               secure: true
-              protocol: http
+              protocol: https
             - name: code-redirect-1
               targetPort: 13131
               exposure: public
-              protocol: http
+              protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
-                 attributes:
+        attributes:
           app.kubernetes.io/component: che-code-runtime
           app.kubernetes.io/part-of: che-code.eclipse.org
           controller.devfile.io/container-contribution: true
       - name: checode
         volume: {}
+ 
