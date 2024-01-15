@@ -1,8 +1,31 @@
-
-  inline:
-    schemaVersion: 2.1.0
+version: 2.0.0
+editors:
+  - schemaVersion: 2.1.0
     metadata:
       name: che-incubator/che-code/latest
+      displayName: VS Code - Open Source
+      description: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+      icon: https://raw.githubusercontent.com/che-incubator/che-code/main/code/resources/server/code-512.png?sanitize=true
+      attributes:
+        publisher: che-incubator
+        version: latest
+        title: Red Hat OpenShift Dev Spaces with Microsoft Visual Studio Code - Open Source IDE
+        repository: https://github.com/che-incubator/che-code
+        firstPublicationDate: '2022-07-19'
+        skipMetaYaml: true
+    commands:
+      - id: init-container-command
+        apply:
+          component: che-code-injector
+      - id: init-che-code-command
+        exec:
+          component: che-code-runtime-description
+          commandLine: 'nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt 2>&1 &'
+    events:
+      preStart:
+        - init-container-command
+      postStart:
+        - init-che-code-command
     components:
       - name: che-code-injector
         container:
@@ -25,6 +48,7 @@
           volumeMounts:
             - name: checode
               path: /checode
+        override:
           endpoints:
             - name: che-code
               attributes:
@@ -36,7 +60,7 @@
               exposure: public
               secure: true
               protocol: http
-            - name: test
+            - name: code-redirect-1
               targetPort: 13131
               exposure: public
               protocol: https
