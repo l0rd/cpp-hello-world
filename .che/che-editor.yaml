@@ -1,53 +1,52 @@
-    id: che-incubator/che-code/latest
+    id: che-incubator/che-idea/latest
     override:
-    components:
-      - name: che-code-injector
-        container:
-          image: 'registry.redhat.io/devspaces/code-rhel8:3.10'
-          command: ["/entrypoint-init-container.sh"]
-          volumeMounts:
-            - name: checode
-              path: /checode
-          memoryLimit: 256Mi
-          memoryRequest: 32Mi
-          cpuLimit: 500m
-          cpuRequest: 30m
-      - name: che-code-runtime-description
+      components:
+      - name: idea-rhel8
         container:
           image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
-          memoryLimit: 1024Mi
-          memoryRequest: 256Mi
-          cpuLimit: 500m
-          cpuRequest: 30m
+          env:
+            - name: PROJECTOR_ASSEMBLY_DIR
+              value: /projector
+            - name: PROJECTOR_CONFIG_DIR
+              value: /home/user/.jetbrains
           volumeMounts:
-            - name: checode
-              path: /checode
+            - name: projector-volume
+              path: /projector
+            - name: projector-configuration
+              path: /home/user/.jetbrains
+            - name: projector-java-configuration
+              path: /home/user/.java
+          memoryLimit: 6144Mi
+          memoryRequest: 2048Mi
+          cpuLimit: 2000m
+          cpuRequest: 1500m
           endpoints:
-            - name: che-code
+            - name: intellij
               attributes:
                 type: main
                 cookiesAuthEnabled: true
                 discoverable: false
                 urlRewriteSupported: true
-              targetPort: 3100
+              targetPort: 8887
               exposure: public
-              secure: true
+              path: '/?backgroundColor=434343&wss'
+              secure: false
               protocol: http
-            - name: test
+            - name: intellijtest
               targetPort: 13131
               exposure: public
               protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
-            - name: code-redirect-2
+            - name: intellij-redirect-2
               targetPort: 13132
               exposure: public
               protocol: https
               attributes:
                 discoverable: false
                 urlRewriteSupported: false
-            - name: code-redirect-3
+            - name: intellij-redirect-3
               targetPort: 13133
               exposure: public
               protocol: https
