@@ -59,7 +59,7 @@ editors:
               exposure: public
               secure: true
               protocol: http
-            - name: code-redirect-1
+            - name: test
               targetPort: 13131
               exposure: public
               protocol: https
