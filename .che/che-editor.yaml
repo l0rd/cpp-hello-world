@@ -1,6 +1,6 @@
-        id: che-incubator/che-code/latest
-        override:
-          components:
+    id: che-incubator/che-code/latest
+    override:
+    components:
       - name: che-code-injector
         container:
           image: 'registry.redhat.io/devspaces/code-rhel8:3.10'
