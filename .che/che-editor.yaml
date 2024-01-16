@@ -1,55 +1,77 @@
-    id: che-incubator/che-idea/latest
-    override:
-      components:
-      - name: idea-rhel8
-        container:
-          image: 'registry.redhat.io/devspaces/udi-rhel8:3.10'
-          env:
-            - name: PROJECTOR_ASSEMBLY_DIR
-              value: /projector
-            - name: PROJECTOR_CONFIG_DIR
-              value: /home/user/.jetbrains
-          volumeMounts:
-            - name: projector-volume
-              path: /projector
-            - name: projector-configuration
-              path: /home/user/.jetbrains
-            - name: projector-java-configuration
-              path: /home/user/.java
-          memoryLimit: 6144Mi
-          memoryRequest: 2048Mi
-          cpuLimit: 2000m
-          cpuRequest: 1500m
-          endpoints:
-            - name: intellij
-              attributes:
-                type: main
-                cookiesAuthEnabled: true
-                discoverable: false
-                urlRewriteSupported: true
-              targetPort: 8887
-              exposure: public
-              path: '/?backgroundColor=434343&wss'
-              secure: false
-              protocol: http
-            - name: intellijtest
-              targetPort: 13131
-              exposure: public
-              protocol: https
-              attributes:
-                discoverable: false
-                urlRewriteSupported: false
-            - name: intellij-redirect-2
-              targetPort: 13132
-              exposure: public
-              protocol: https
-              attributes:
-                discoverable: false
-                urlRewriteSupported: false
-            - name: intellij-redirect-3
-              targetPort: 13133
-              exposure: public
-              protocol: https
-              attributes:
-                discoverable: false
-                urlRewriteSupported: false
+schemaVersion: 2.1.0
+metadata:
+  name: che-code
+commands:
+  - id: init-container-command
+    apply:
+      component: che-code-injector
+  - id: init-che-code-command
+    exec:
+      component: che-code-runtime-description
+      commandLine: nohup /checode/entrypoint-volume.sh > /checode/entrypoint-logs.txt 2>&1 &
+events:
+  preStart:
+    - init-container-command
+  postStart:
+    - init-che-code-command
+components:
+  - name: che-code-runtime-description
+    container:
+      image: quay.io/devfile/universal-developer-image@sha256:f4e3180413ab3d16957642af9b12b0d13afe9f3429ecd62fc71e24553ca0cd74
+      volumeMounts:
+        - name: checode
+          path: /checode
+      memoryLimit: 1024Mi
+      memoryRequest: 256Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
+      endpoints:
+        - name: che-code
+          attributes:
+            type: main
+            cookiesAuthEnabled: true
+            discoverable: false
+            urlRewriteSupported: true
+          targetPort: 3100
+          exposure: public
+          secure: false
+          protocol: https
+        - name: test
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+          targetPort: 13131
+          exposure: public
+          protocol: https
+        - name: code-redirect-2
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+          targetPort: 13132
+          exposure: public
+          protocol: https
+        - name: code-redirect-3
+          attributes:
+            discoverable: false
+            urlRewriteSupported: false
+          targetPort: 13133
+          exposure: public
+          protocol: https
+    attributes:
+      app.kubernetes.io/component: che-code-runtime
+      app.kubernetes.io/part-of: che-code.eclipse.org
+      controller.devfile.io/container-contribution: true
+  - name: checode
+    volume: {}
+  - name: che-code-injector
+    container:
+      image: quay.io/che-incubator-pull-requests/che-code:pr-317-amd64
+      command:
+        - /entrypoint-init-container.sh
+      volumeMounts:
+        - name: checode
+          path: /checode
+      memoryLimit: 256Mi
+      memoryRequest: 32Mi
+      cpuLimit: 500m
+      cpuRequest: 30m
