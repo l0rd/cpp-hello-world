@@ -12,7 +12,6 @@ components:
       volumeMounts: 
         - name: data
           path: /tmp
-      mountSources: true
   - name: data
     volume:
       size: 1G
